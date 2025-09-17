@@ -73,7 +73,7 @@ test-unit: ## Run unit tests (excluding integration tests)
 	@echo "$(BLUE)Running unit tests...$(RESET)"
 	$(VENV_PYTHON) -m pytest tests/test_protocol.py tests/test_session.py $(TEST_ARGS)
 
-test-integration: ## Run integration tests with real server
+test-integration: check-server-config ## Run integration tests with real server
 	@echo "$(BLUE)Running integration tests with server $(SERVER_HOST):$(SERVER_PORT)...$(RESET)"
 	SERVER_HOST=$(SERVER_HOST) SERVER_PORT=$(SERVER_PORT) TIMEOUT=$(TIMEOUT) \
 	$(VENV_PYTHON) -m pytest tests/test_integration.py $(TEST_ARGS)
@@ -82,12 +82,28 @@ test-client: ## Run client tests (mock-based)
 	@echo "$(BLUE)Running client tests...$(RESET)"
 	$(VENV_PYTHON) -m pytest tests/test_client.py $(TEST_ARGS)
 
-test-all: ## Run all tests with coverage report
+test-protocol: ## Run protocol tests (mock-based)
+	@echo "$(BLUE)Running client tests...$(RESET)"
+	$(VENV_PYTHON) -m pytest tests/test_protocol.py $(TEST_ARGS)
+
+test-session: ## Run session tests (mock-based)
+	@echo "$(BLUE)Running client tests...$(RESET)"
+	$(VENV_PYTHON) -m pytest tests/test_session.py $(TEST_ARGS)
+
+test-tui: ## Run tui tests (mock-based)
+	@echo "$(BLUE)Running client tests...$(RESET)"
+	$(VENV_PYTHON) -m pytest tests/test_tui.py $(TEST_ARGS)
+
+test-utils: ## Run session tests (mock-based)
+	@echo "$(BLUE)Running client tests...$(RESET)"
+	$(VENV_PYTHON) -m pytest tests/test_utils.py $(TEST_ARGS)
+
+test-all: check-server-config ## Run all tests with coverage report
 	@echo "$(BLUE)Running all tests with coverage...$(RESET)"
 	SERVER_HOST=$(SERVER_HOST) SERVER_PORT=$(SERVER_PORT) TIMEOUT=$(TIMEOUT) \
 	$(VENV_PYTHON) -m pytest tests/ $(TEST_ARGS) $(COVERAGE_ARGS)
 
-test-fast: ## Run tests without coverage (faster)
+test-fast: check-server-config ## Run tests without coverage (faster)
 	@echo "$(BLUE)Running fast tests...$(RESET)"
 	SERVER_HOST=$(SERVER_HOST) SERVER_PORT=$(SERVER_PORT) TIMEOUT=$(TIMEOUT) \
 	$(VENV_PYTHON) -m pytest tests/ $(TEST_ARGS) --no-cov

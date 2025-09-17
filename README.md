@@ -117,6 +117,9 @@ make test-fast
 # Run specific test categories
 make test-client    # Client tests only
 make test-protocol  # Protocol tests only
+make test-session  # Session tests only
+make test-tui  # Tui tests only
+make test-utils  # Utils tests only
 ```
 
 ## Development Commands
