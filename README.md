@@ -102,14 +102,14 @@ make run SERVER_HOST=192.168.1.100 SERVER_PORT=8080 TIMEOUT=10.0
 ## Testing
 
 ```bash
-# Run all tests with coverage
-make test-all SERVER_HOST=<server_host> SERVER_PORT=<server_port>
+# Run all tests with coverage (you can use the environment variables or add SERVER_HOST=<server_host> SERVER_PORT=<server_port>)
+make test-all 
 
 # Run only unit tests (fast)
 make test-unit
 
-# Run integration tests with real server
-make test-integration SERVER_HOST=<server_host> SERVER_PORT=<server_port>
+# Run integration tests with real server (you can use the environment variables or add SERVER_HOST=<server_host> SERVER_PORT=<server_port>)
+make test-integration
 
 # Run tests without coverage (faster)
 make test-fast
