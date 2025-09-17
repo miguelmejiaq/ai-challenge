@@ -90,8 +90,8 @@ You can set environment variables or pass them to make commands:
 
 ```bash
 # Using environment variables
-export SERVER_HOST=35.153.159.192
-export SERVER_PORT=7321
+export SERVER_HOST=<HOST_ID>
+export SERVER_PORT=<HOST_PORT>
 export TIMEOUT=5.0
 make run
 
