@@ -46,7 +46,7 @@ class MockSocket:
             raise self.should_raise_on_recv
         
         if self.receive_index >= len(self.receive_data):
-            return b""  # Simulate disconnection
+            return socket.timeout("No more data")  # Simulate disconnection
         
         data = self.receive_data[self.receive_index]
         self.receive_index += 1
@@ -63,7 +63,10 @@ class MockSocket:
         """Add a response frame or raw data to be returned by recv."""
         if isinstance(frame_or_data, ProtocolFrame):
             encoded = frame_or_data.encode()
-            self.receive_data.append(encoded)
+            length_bytes = encoded[:2]
+            frame_data = encoded[2:]
+            self.receive_data.append(length_bytes)
+            self.receive_data.append(frame_data)
         else:
             self.receive_data.append(frame_or_data)
 
@@ -441,6 +444,50 @@ class TestClientEdgeCases:
         client = MiniTelClient("test.example.com", 1234)
         assert client.logger is not None
         assert client.logger.name == "src.minitel.client"
+
+    def test_client_main_function(self):
+        """Test main CLI function."""
+        with patch('sys.argv', ['client.py', '--host', 'localhost', '--port', '8080']):
+            with patch('src.minitel.client.MiniTelClient.execute_mission') as mock_execute:
+                mock_execute.return_value = "TEST_CODE"
+                
+                from src.minitel.client import main
+                result = main()
+                assert result == 0
+
+    def test_client_main_keyboard_interrupt(self):
+        """Test main function with keyboard interrupt."""
+        with patch('sys.argv', ['client.py', '--host', 'localhost', '--port', '8080']):
+            with patch('src.minitel.client.MiniTelClient.execute_mission') as mock_execute:
+                mock_execute.side_effect = KeyboardInterrupt()
+                
+                from src.minitel.client import main
+                result = main()
+                assert result == 1
+
+    def test_client_main_exception(self):
+        """Test main function with exception."""
+        with patch('sys.argv', ['client.py', '--host', 'localhost', '--port', '8080']):
+            with patch('src.minitel.client.MiniTelClient.execute_mission') as mock_execute:
+                mock_execute.side_effect = Exception("Test error")
+                
+                from src.minitel.client import main
+                result = main()
+                assert result == 1
+
+    def test_execute_mission_finally_block(self):
+        """Test that execute_mission always disconnects."""
+        with patch.object(self.client, 'connect') as mock_connect:
+            with patch.object(self.client, 'authenticate') as mock_auth:
+                with patch.object(self.client, 'disconnect') as mock_disconnect:
+                    mock_auth.side_effect = Exception("Test error")
+                    
+                    with pytest.raises(Exception):
+                        self.client.execute_mission()
+                    
+                    # Should still call disconnect
+                    mock_disconnect.assert_called_once()
+
     
     @patch('socket.socket')
     def test_disconnect_with_exception(self, mock_socket_class):
