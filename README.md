@@ -78,7 +78,7 @@ make mission SERVER_HOST=<server_host> SERVER_PORT=<server_port>
 make list-sessions
 
 # Replay a specific session
-make replay SESSION_FILE=session_20250917_113136.json
+make replay SESSION_FILE=<session file>
 
 # Replay the most recent session
 make replay-latest
