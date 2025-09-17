@@ -3,8 +3,8 @@
 # This Makefile provides convenient commands for development, testing,
 # and execution of the MiniTel-Lite client.
 
-# Default configuration
-PYTHON := python
+# Default configuration - auto-detect Python version
+PYTHON := $(shell command -v python3 2>/dev/null || command -v python 2>/dev/null || echo "python")
 VENV_DIR := .venv
 VENV_PYTHON := $(VENV_DIR)/bin/python
 VENV_PIP := $(VENV_DIR)/bin/pip
@@ -143,8 +143,20 @@ replay: ## Launch TUI session replay (specify SESSION_FILE=filename)
 replay-latest: ## Replay the most recent session
 	@echo "$(CYAN)🎬 LAUNCHING LATEST SESSION REPLAY$(RESET)"
 	@echo "$(CYAN)=================================$(RESET)"
-	$(VENV_PYTHON) -c "import os; sessions = [f for f in os.listdir('sessions') if f.endswith('.json')]; print(max(sessions) if sessions else 'No sessions found')" | \
-	xargs -I {} $(VENV_PYTHON) -m src.tui.replay --session sessions/{}
+	@if [ ! -d sessions/ ]; then \
+		echo "$(RED)Error: sessions directory not found$(RESET)"; \
+		echo "$(YELLOW)Run a mission first to create sessions$(RESET)"; \
+		exit 1; \
+	fi
+	@LATEST_SESSION=$$(ls -t sessions/*.json 2>/dev/null | head -n1); \
+	if [ -z "$$LATEST_SESSION" ]; then \
+		echo "$(RED)Error: No session files found$(RESET)"; \
+		echo "$(YELLOW)Run a mission first to create sessions$(RESET)"; \
+		exit 1; \
+	else \
+		echo "$(YELLOW)Replaying: $$LATEST_SESSION$(RESET)"; \
+		$(VENV_PYTHON) -m src.tui.replay --session "$$LATEST_SESSION"; \
+	fi
 
 # Verification and quality
 verify: ## Run requirements verification
