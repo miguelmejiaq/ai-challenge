@@ -196,6 +196,11 @@ class SessionLoader:
         for session_file in sessions_path.glob("*.json"):
             try:
                 session_data = SessionLoader.load_session(str(session_file))
+                
+                # Validate that this is a proper session file by checking for required fields
+                if not session_data.get("session_id"):
+                    continue
+                
                 sessions.append({
                     "filename": session_file.name,
                     "filepath": str(session_file),
@@ -209,8 +214,8 @@ class SessionLoader:
                 # Skip invalid session files
                 continue
         
-        # Sort by start time (newest first)
-        sessions.sort(key=lambda x: x.get("start_time", 0), reverse=True)
+        # Sort by start time (newest first), handle None values
+        sessions.sort(key=lambda x: x.get("start_time") or 0, reverse=True)
         return sessions
     
     @staticmethod

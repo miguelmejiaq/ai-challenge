@@ -269,7 +269,7 @@ class TestSessionLoader:
         with tempfile.TemporaryDirectory() as temp_dir:
             # Create valid session file
             self.create_test_session_file(temp_dir, valid_session)
-            Path(temp_dir / "test_session.json").rename(Path(temp_dir) / "valid.json")
+            (Path(temp_dir) / "test_session.json").rename(Path(temp_dir) / "valid.json")
             
             # Create invalid JSON file
             with open(Path(temp_dir) / "invalid.json", 'w') as f:

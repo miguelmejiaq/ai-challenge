@@ -103,7 +103,7 @@ make run SERVER_HOST=192.168.1.100 SERVER_PORT=8080 TIMEOUT=10.0
 
 ```bash
 # Run all tests with coverage
-make test-all
+make test-all SERVER_HOST=<server_host> SERVER_PORT=<server_port>
 
 # Run only unit tests (fast)
 make test-unit
